@@ -8,6 +8,7 @@ RUN airflow db init
 RUN airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email 'kevin@buffr.ai'
 ENV AIRFLOW_HOME=/root/airflow
 ENV PYTHONPATH="${PYTHONPATH}:${AIRFLOW_HOME}"
+RUN ln -s /app/dags ${AIRFLOW_HOME}/dags
 WORKDIR /app
 COPY /app .
 ENTRYPOINT ["/bin/bash"]
