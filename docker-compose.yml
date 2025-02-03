@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  pg_database:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: test
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d test -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  create_db:
+    image: initialize_db:001
+    ports:
+      - "5001:5001"
+    depends_on:
+      pg_database:
+        condition: service_healthy
+
+
+  airflow_pipeline:
+    image: order_pipeline:001
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./raw_data:/app/data/raw_data
+    depends_on:
+      pg_database:
+        condition: service_healthy
+      create_db:
+        condition: service_completed_successfully
+    stdin_open: true
+    tty: true

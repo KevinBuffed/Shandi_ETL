@@ -1,0 +1,8 @@
+FROM python:3.9.1
+RUN pip install pandas sqlalchemy psycopg2
+WORKDIR /app
+ENV login=root
+ENV password=root
+ENV initialization=False
+COPY /app/Create_datawarehouse.py Create_datawarehouse.py
+ENTRYPOINT ["python", "Create_datawarehouse.py"]
